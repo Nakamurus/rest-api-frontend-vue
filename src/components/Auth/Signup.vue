@@ -31,8 +31,8 @@ export default {
     data() {
         return {
             user: {
-                email: null,
-                password: null
+                email: '',
+                password: ''
             }
         }
     },
@@ -42,7 +42,6 @@ export default {
                 email: this.user.email,
                 password: this.user.password
             };
-
             try {
                 await CRUDService.AuthSignup(user)
             } catch (error) {

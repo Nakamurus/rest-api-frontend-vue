@@ -18,11 +18,11 @@ class CRUDService {
     ProdDelete(id) {
         return http.delete(`/feed/${id}`);
     }
-    AuthLogin() {
-        return http.post('/login');
+    AuthLogin(user) {
+        return http.post('/auth/login', user);
     }
-    AuthSignup() {
-        return http.put('/auth/signup');
+    AuthSignup(user) {
+        return http.post('/auth/signup', user);
     }
 }
 
