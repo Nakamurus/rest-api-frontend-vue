@@ -22,7 +22,7 @@ class CRUDService {
         return http.post('/auth/login', user);
     }
     AuthSignup(user) {
-        return http.post('/auth/signup', user);
+        return http.put('/auth/signup', user);
     }
 }
 
