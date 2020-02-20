@@ -1,4 +1,4 @@
-import AuthService from '../services/auth_service';
+import { userService } from '../services/auth_service';
 import router from '../router/index'
 
 const user = JSON.parse(localStorage.getItem('user'));
@@ -37,30 +37,33 @@ const mutations = {
 const actions = {
     async loginAction({ dispatch, commit }, {email, password}) {
         commit('loginRequest', { email });
-        try {
-            const user = await AuthService.Login(email, password)
-            commit('loginSuccess', user)
-            router.push('/')
-        } catch (error) {
-            commit('loginFailure', error);
-            dispatch('alert/error', error, {root: true });
-        }
+
+        userService.login(email, password)
+            .then(
+                user => {
+                    commit('loginSuccess', user);
+                    router.push('/');
+                },
+                error => {
+                    commit('loginFailure', error);
+                    dispatch('alert/error', error, { root: true });
+                }
+            );
     },
     logoutAction({ commit }) {
-        AuthService.Logout();
+        userService.logout();
         commit('logout');
     },
     async registerAction({ dispatch, commit }, user) {
         commit('registerRequest', user);
-
         try {
-            const user = await AuthService.Register(user)
-            await commit('registerSuccess', user);
-            router.push('/login');
-            dispatch('alert/success', 'Registration successful', { root: true });
+            const res = await userService.register(user)
+            commit('registerSuccess', res);
+            await router.push('/login');
+            dispatch('alert/successAction', 'Registration successful', { root: true });
         } catch (error) {
             commit('registerFailure', error);
-            dispatch('alert/error', error, { root: true });
+            dispatch('alert/errorAction', error, { root: true });
         }
     }
 };
