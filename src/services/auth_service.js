@@ -6,7 +6,7 @@ export const userService = {
     logout,
     register,
     getAll,
-    getById,
+    getByName,
     update,
     delete: _delete
 };
@@ -46,7 +46,7 @@ function register (user) {
     return fetch(`${process.env.VUE_APP_APIBASEURL}/auth/signup`, requestOptions).then(handleResponse);
 }
 
-function getAll() {
+async function getAll() {
     const requestOptions = {
         method: 'GET',
         mode: 'cors',
@@ -54,10 +54,11 @@ function getAll() {
         headers: authHeader()
     };
 
-    return fetch(`${process.env.VUE_APP_APIBASEURL}/users`, requestOptions).then(handleResponse);
+    const res = await fetch(`${process.env.VUE_APP_APIBASEURL}/auth/users`, requestOptions);
+    return res.json()
 }
 
-function getById(id) {
+function getByName(username) {
     const requestOptions = {
         method: 'GET',
         mode: 'cors',
@@ -65,7 +66,7 @@ function getById(id) {
         headers: authHeader()
     };
 
-    return fetch(`${process.env.VUE_APP_APIBASEURL}/users/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${process.env.VUE_APP_APIBASEURL}/users/${username}`, requestOptions).then(handleResponse);
 }
 
 function update(user) {
