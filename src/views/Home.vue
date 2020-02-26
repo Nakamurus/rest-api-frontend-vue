@@ -1,91 +1,40 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-
-  <section>
-        <div v-if="errored">
-            <p>No Product!</p>
-        </div>
-        <div v-else>
-            <div v-if="loading">
-                Loading...
-            </div>
-
-            <div
-              v-else
-              v-for="prod in products"
-              :key="prod._id"
-            >
-              {{ products }}
-            </div>
-        </div>
-    </section>
-
-    <form
-      class="product-form"
-      action="/admin/add-product"
-      method="POST"
-      enctype="multipart/form-data"
-  >
-      <!-- this enctype tells that requests will contain mixed data, text, binary -->
-      <div class="form-control">
-          <label for="title">Title</label>
-          <input
-              type="text"
-              name="title"
-              id="title"
-          >
-      </div>
-      <div class="form-control">
-          <label for="imageUrl">Image</label>
-          <input
-              type="file"
-              name="imageUrl"
-              id="imageUrl">
-      </div>
-      <div class="form-control">
-          <label for="price">Price</label>
-          <input
-              type="number"
-              name="price"
-              id="price"
-              step="0.01"
-          >
-      </div>
-      <div class="form-control">
-          <label for="content">Description</label>
-          <textarea
-              name="content"
-              id="content"
-              rows="5"></textarea>
-      </div>
-      <button class="btn" type="submit">Add Product</button>
-  </form>
+  <div>
+    <h1>Hi, {{ account.user.firstname }}!</h1>
+    <em v-if="users.loading">Loading users...</em>
+    <span v-if="users.error" class="text-danger">Error: {{ users.error }}</span>
+    <ul v-if="users.items">
+      <li v-for="user in users.items" :key="user.id">
+        {{ user.firstName + '' + user.lastName }}
+        <span v-if="user.deleting"><em>  - Deleting...</em></span>
+        <span v-else-if="user.deleteError" class="text-danger">- ERROR: {{ user.deleteError }}</span>
+        <span v-else> - <a @click="deleteUser(user.id)" class="text-danger">Delete</a></span>
+      </li>
+    </ul>
+    <p>
+      <router-link to="/login">Logout</router-link>
+    </p>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-// @ is an alias to /src
+import { mapState, mapActions } from 'vuex'
 
 export default {
-  name: 'home',
-  data() {
-    return {
-      products: null,
-      loading: true,
-      errored: false
-    }
+  computed: {
+    ...mapState({
+      account: state => state.account,
+      users: state => state.users.all
+    })
   },
-  mounted () {
-        axios
-          .get('http://localhost:3000/feed/posts')
-          .then(prods => (this.products = prods.data.bpi))
-          .catch(() => {
-              this.errored = true
-          })
-          .finally(() => this.loading = false)
-
-    }
-}
+  created() {
+    this.getAllusers();
+  },
+  methods: {
+    ...mapActions('usrs', {
+      getAllusers: 'getAll',
+      deleteUser: 'delete'
+    })
+  }
+};
 </script>

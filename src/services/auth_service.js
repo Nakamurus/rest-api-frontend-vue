@@ -46,7 +46,7 @@ function register (user) {
     return fetch(`${process.env.VUE_APP_APIBASEURL}/auth/signup`, requestOptions).then(handleResponse);
 }
 
-async function getAll() {
+async function getAll(page=1) {
     const requestOptions = {
         method: 'GET',
         mode: 'cors',
@@ -54,7 +54,7 @@ async function getAll() {
         headers: authHeader()
     };
 
-    const res = await fetch(`${process.env.VUE_APP_APIBASEURL}/auth/users`, requestOptions);
+    const res = await fetch(`${process.env.VUE_APP_APIBASEURL}/auth/users?page=${page}`, requestOptions);
     return res.json()
 }
 

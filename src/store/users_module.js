@@ -5,10 +5,9 @@ const state = {
 };
 
 const actions = {
-    getAll({ commit }) {
-        commit('getAllRequest');
+    getAll({ commit }, page) {
 
-        userService.getAll().then(
+        userService.getAll(page).then(
             users => commit('getAllSuccess', users),
             err => commit('getAllFailure', err)
         );
