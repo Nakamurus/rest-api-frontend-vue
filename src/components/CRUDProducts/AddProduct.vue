@@ -45,6 +45,8 @@ export default {
                 content: this.product.content,
             };
             CRUDService.ProdCreate(data);
+            this.product.title = '';
+            this.product.content = '';
         }
     }
 }

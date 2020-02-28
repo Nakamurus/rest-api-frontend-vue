@@ -1,61 +1,50 @@
 <template>
     <div>
         <h2>Register</h2>
-        <form @submit.prevent="handleSubmit">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  v-model="user.email"
-                  v-validate="required"
-                  class="form-control"
-                  :class="{ 'is-invalid': submitted && errors.has('email') }"
-                >
-                <div
-                  class="invalid-feedback"
-                  v-if="submitted && errors.has('email')"
-                >{{ errors.first('email') }}</div>
-            </div>
-            <div class="form-grou">
-                <label for="username">Username</label>
-                <input
-                  type="text"
-                  name="username"
-                  id="username"
-                  v-model="user.username"
-                  v-validate="required"
-                  class="form-control"
-                  :class="{ 'is-invalid': submitted && errors.has('username') }"
-                >
-                <div
-                  class="invalid-feedback"
-                  v-if="submitted && errors.has('username')"
-                >{{ errors.first('username') }}</div>
-            </div>
-            <div class="form-group">
-                <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  v-model="user.password"
-                  v-validate="{ required: true, min: 6 }"
-                  class="form-control"
-                  :class="{ 'is-invalid': submitted && errors.has('password') }"
-                >
-                <div
-                  class="invalid-feedback"
-                  v-if="submitted && errors.has('password')"
-                >{{ errors.first('password') }}</div>
-            </div>
-            <div class="form-group">
-                <button class="btn btn-primary" :disabled="status.registering">Register</button>
-                <img v-show="status.registering" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+        <validation-observer v-slot="{ invalid, handleSubmit }">
+            <form @submit.prevent="handleSubmit(onSubmit)">
+                <validation-provider vid="email" name="E-mail" rules="required" v-slot="errors">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        v-model="user.email"
+                        class="form-control"
+                        :class="{ 'is-invalid': errors[0] }"
+                    >
+                    <span>{{ errors[0] }}</span>
+                </validation-provider>
+
+                <validation-provider name="User Name" rules="required" v-slot="errors">
+                    <label for="username">Username</label>
+                    <input
+                        type="text"
+                        name="username"
+                        id="username"
+                        v-model="user.username"
+                        class="form-control"
+                        :class="{ 'is-invalid': errors[0] }"
+                    >
+                    <span class="error">{{ errors[0] }}</span>
+                </validation-provider>
+
+                <validation-provider vid="password" name="Password" rules="required|min:6" v-slot="errors">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        v-model="user.password"
+                        class="form-control"
+                        :class="{ 'invalid': errors[0] }"
+                    >
+                    <span>{{ errors[0] }}</span>
+                </validation-provider>
+                <button class="btn btn-primary" :disabled="invalid || status.registering">Register</button>
                 <router-link to="/login" class="btn btn-link">Cancel</router-link>
-            </div>
-        </form>
+            </form>
+        </validation-observer>
     </div>
 </template>
 
@@ -77,14 +66,16 @@ export default {
         ...mapState('account', ['status'])
     },
     methods: {
-        ...mapActions('account', ['register']),
-        handleSubmit() {
+        ...mapActions('account', ['registerAction']),
+        onSubmit() {
             this.submitted = true;
-            this.$validator.validate().then(valid => {
-                if(valid) {
-                    this.registerAction(this.user)
-                }
-            });
+            this.registerAction(this.user);
+            // if(res.errors) {
+            //     this.$refs.form.setErrors(res.errors);
+            //     alert(res.message);
+            // } else {
+            //     alert('Success!!!')
+            // }
         }
     }
 }

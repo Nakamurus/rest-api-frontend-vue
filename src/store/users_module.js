@@ -6,11 +6,19 @@ const state = {
 
 const actions = {
     getAll({ commit }, page) {
-
+        commit('getAllRequest')
         userService.getAll(page).then(
             users => commit('getAllSuccess', users),
             err => commit('getAllFailure', err)
         );
+    },
+
+    get({commit}, id) {
+        try {
+            return userService.getById(id.id)
+        } catch (err) {
+            err => commit('getAllFailure', err)
+        }
     },
 
     delete({ commit }, id) {

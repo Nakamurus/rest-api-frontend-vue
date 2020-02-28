@@ -1,17 +1,18 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/add">Add Product</router-link> |
-      <router-link to="/login">Login</router-link> |
-      <router-link to="/signup">Signup</router-link>
+    <div class="jumbotron">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6 offset-sm-3">
+            <div v-if="alert.message" :class="`alert ${alert.type}`">{{alert.message}}</div>
+            <router-view></router-view>
+          </div>
+        </div>
+      </div>
     </div>
-    <router-view/>
   </div>
 </template>
-
-<style>
+\<style>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -33,3 +34,27 @@
   color: #42b983;
 }
 </style>
+
+<script>
+import { mapState, mapActions } from 'vuex'
+
+export default {
+  name: 'app',
+  computed: {
+    ...mapState({
+      alert: state => state.alert
+    })
+  },
+  methods: {
+    ...mapActions({
+      clearAlert: 'alert/clear'
+    })
+  },
+  watch: {
+    $route (to, from) { // eslint-disable-line
+      // clear alert on location change
+      this.clearAlert();
+    }
+  }
+}
+</script>

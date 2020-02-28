@@ -11,7 +11,7 @@ const actions = {
         commit('error', message);
     },
     clearAction({ commit }, message) {
-        commit('success', message);
+        commit('clear', message);
     }
 };
 
